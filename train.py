@@ -25,10 +25,10 @@ from copy import deepcopy
 from datetime import datetime, timedelta
 from pathlib import Path
 
-try:
-    import comet_ml  # must be imported before torch (if installed)
-except ImportError:
-    comet_ml = None
+# try:
+#     import comet_ml  # must be imported before torch (if installed)
+# except ImportError:
+comet_ml = None
 
 import numpy as np
 import torch
@@ -37,6 +37,7 @@ import torch.nn as nn
 import yaml
 from torch.optim import lr_scheduler
 from tqdm import tqdm
+from omegaconf import OmegaConf
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -166,7 +167,9 @@ def train(hyp, opt, device, callbacks):
     # Save run settings
     if not evolve:
         yaml_save(save_dir / "hyp.yaml", hyp)
-        yaml_save(save_dir / "opt.yaml", vars(opt))
+        opt_dict = OmegaConf.to_container(opt, resolve=True)
+        yaml_save(save_dir / "opt.yaml", opt_dict)
+        # yaml_save(save_dir / "opt.yaml", opt)
 
     # Loggers
     data_dict = None
